@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func CreateTask(c *gin.Context) {
@@ -48,6 +49,27 @@ func GetAllTasks(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"tasks": model.ConvertTaskArrayToDto(tasks)})
+}
+
+func DeleteTask(c *gin.Context) {
+	taskIdString := c.Param("task_id")
+	taskID, err := strconv.ParseUint(taskIdString, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, util.NewRestErrBadRequest("Invalid task id"))
+		return
+	}
+	var user *model.User
+	user, restErr := extractUser(c)
+	if err != nil {
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+	restErr = service.DeleteTask(uint(taskID), user.ID)
+	if restErr != nil {
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"delete": "successful"})
 }
 
 func extractUser(c *gin.Context) (*model.User, *util.RestError) {

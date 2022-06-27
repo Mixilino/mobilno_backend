@@ -16,6 +16,7 @@ func main() {
 	{
 		protected.GET("/tasks", controller.GetAllTasks)
 		protected.POST("/task", controller.CreateTask)
+		protected.DELETE("/task/:task_id", controller.DeleteTask)
 	}
 
 	panic(router.Run(":8080"))

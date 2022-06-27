@@ -17,10 +17,14 @@ func CreateTask(task *model.Task) *util.RestError {
 	return nil
 }
 
-func GetAllTasks(userId uint) ([]model.Task, *util.RestError) {
-	tasks, err := repository.GetAllTasks(userId)
+func GetAllTasks(userID uint) ([]model.Task, *util.RestError) {
+	tasks, err := repository.GetAllTasks(userID)
 	if err != nil {
 		return nil, util.NewRestErrInternalServerError()
 	}
 	return tasks, nil
+}
+
+func DeleteTask(taskID, userID uint) *util.RestError {
+	return repository.DeleteTask(taskID, userID)
 }

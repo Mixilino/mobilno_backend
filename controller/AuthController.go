@@ -16,13 +16,12 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	token, restErr := service.SignIn(user)
+	tokens, restErr := service.SignIn(user)
 	if restErr != nil {
 		c.JSON(restErr.StatusCode, restErr)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"jwt": token})
-
+	c.JSON(http.StatusOK, tokens)
 }
 
 func SignUp(c *gin.Context) {
@@ -38,5 +37,8 @@ func SignUp(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": str})
+}
+
+func SignOut(c *gin.Context) {
 
 }

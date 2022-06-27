@@ -27,3 +27,10 @@ func NewRestErrConflict(message string) *RestError {
 		Message:    message,
 	}
 }
+
+func NewRestErrUnauthorized() *RestError {
+	return &RestError{
+		StatusCode: http.StatusUnauthorized,
+		Message:    "Unauthorized",
+	}
+}

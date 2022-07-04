@@ -72,6 +72,62 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"delete": "successful"})
 }
 
+func ModifyTask(c *gin.Context) {
+	var user *model.User
+	user, restErr := extractUser(c)
+	if restErr != nil {
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+	taskID := c.Param("task_id")
+
+	var task model.Task
+	task.UserID = user.ID
+	id, err := strconv.ParseUint(taskID, 10, 64)
+	task.ID = uint(id)
+	if err != nil {
+		restErr := util.NewRestErrBadRequest("Invalid task id")
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+
+	if err := c.ShouldBindJSON(&task); err != nil {
+		restErr := util.NewRestErrBadRequest("Invalid body data for task.")
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+
+	if err := service.ModifyTask(&task); err != nil {
+		c.JSON(err.StatusCode, err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"task": "modified"})
+}
+
+func GetTask(c *gin.Context) {
+	var user *model.User
+	user, restErr := extractUser(c)
+	if restErr != nil {
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+	taskID := c.Param("task_id")
+
+	id, err := strconv.ParseUint(taskID, 10, 64)
+	if err != nil {
+		re := util.NewRestErrBadRequest("Invalid task id")
+		c.JSON(re.StatusCode, re)
+		return
+	}
+
+	task, restErr := service.GetTask(user.ID, uint(id))
+	if err != nil {
+		c.JSON(restErr.StatusCode, restErr)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"task": task})
+}
+
 func extractUser(c *gin.Context) (*model.User, *util.RestError) {
 	u, ok := c.Get("user")
 	if !ok {

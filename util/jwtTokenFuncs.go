@@ -76,7 +76,7 @@ func CreateToken(user model.User) (string, *RestError) {
 	atClaims["authorized"] = true
 	atClaims["user_id"] = user.ID
 	atClaims["username"] = user.Username
-	atClaims["exp"] = time.Now().Add(time.Hour * 20).Unix()
+	atClaims["exp"] = time.Now().Add(time.Hour * 3).Unix()
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS512, atClaims)
 	accessTokenString, err := accessToken.SignedString([]byte(secret))
 	if err != nil {

@@ -31,3 +31,25 @@ func DeleteTask(taskID, userID uint) *util.RestError {
 	}
 	return nil
 }
+
+func ModifyTask(task *model.Task, modifyName bool) *util.RestError {
+	if !modifyName {
+		oldTask := &model.Task{}
+		oldTask.ID = task.ID
+		database.DBInstance.Find(oldTask)
+		task.Name = oldTask.Name
+	}
+	res := database.DBInstance.Save(task)
+	if res.RowsAffected == 0 {
+		return util.NewRestErrConflict("Task cant be created")
+	}
+	return nil
+}
+
+func GetTask(task *model.Task) *util.RestError {
+	res := database.DBInstance.Find(task)
+	if res.RowsAffected == 0 {
+		return util.NewRestErrBadRequest("No task")
+	}
+	return nil
+}
